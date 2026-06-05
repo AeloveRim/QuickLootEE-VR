@@ -209,6 +209,10 @@ namespace Scaleform
 			case Type::kHide:
 				{
 					SetShowing(false);
+					_src = RE::ObjectRefHandle();
+					_viewHandler->SetSource({});
+					_containerChangedHandler.SetContainer({});
+					_openCloseHandler.SetSource({});
 					break;
 				}
 			case Type::kShow:
