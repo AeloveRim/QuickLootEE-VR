@@ -166,13 +166,29 @@ namespace Input
 				return EventResult::kContinue;
 			}
 
+			bool shouldStop = false;
 			if (a_event) {
+				for (auto event = *a_event; event; event = event->next) {
+					const auto buttonEvent = event->AsButtonEvent();
+					if (buttonEvent) {
+						const auto controlMap = RE::ControlMap::GetSingleton();
+						const auto idCode =
+							controlMap ?
+								controlMap->GetMappedKey("Activate", buttonEvent->GetDevice()) :
+								RE::ControlMap::kInvalid;
+
+						if (buttonEvent->GetIDCode() == idCode) {
+							shouldStop = true;
+						}
+					}
+				}
+
 				for (auto& callback : _callbacks) {
 					(*callback)(*a_event);
 				}
 			}
 
-			return EventResult::kContinue;
+			return shouldStop ? EventResult::kStop : EventResult::kContinue;
 		}
 
 		std::vector<std::unique_ptr<IHandler>> _callbacks{};
