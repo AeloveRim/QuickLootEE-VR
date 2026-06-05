@@ -29,6 +29,9 @@ namespace Input
 					//pcControls->shoutHandler->SetInputEventHandlingEnabled(false);
 					//->attackBlockHandler->SetInputEventHandlingEnabled(false);
 					pcControls->jumpHandler->SetInputEventHandlingEnabled(false);
+					if (pcControls->activateHandler) {
+						pcControls->activateHandler->SetInputEventHandlingEnabled(false);
+					}
 				}
 			}
 		}
@@ -45,6 +48,9 @@ namespace Input
 					//pcControls->shoutHandler->SetInputEventHandlingEnabled(true);
 					//pcControls->attackBlockHandler->SetInputEventHandlingEnabled(true);
 					pcControls->jumpHandler->SetInputEventHandlingEnabled(true);
+					if (pcControls->activateHandler) {
+						pcControls->activateHandler->SetInputEventHandlingEnabled(true);
+					}
 				}
 			}
 		}
