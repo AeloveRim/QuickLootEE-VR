@@ -23,11 +23,13 @@ public:
 
 		SetVisible(false);
 		Register();
+		_listeners.Enable();
 		Evaluate();
 	}
 
 	~ViewHandler()
 	{
+		_listeners.Disable();
 		Unregister();
 		ShowHUD();
 	}
@@ -135,7 +137,6 @@ private:
 				AdjustPriority(Priority::kDefault);
 				SetVisible(true);
 				_disablers.Enable();
-				_listeners.Enable();
 				_enabled = true;
 			}
 		});
@@ -151,7 +152,6 @@ private:
 				AdjustPriority(Priority::kLowest);
 				SetVisible(false);
 				_disablers.Disable();
-				_listeners.Disable();
 				_enabled = false;
 			}
 		});
