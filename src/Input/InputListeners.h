@@ -162,11 +162,9 @@ namespace Input
 
 		EventResult ProcessEvent(RE::InputEvent* const* a_event, RE::BSTEventSource<RE::InputEvent*>*) override
 		{
-			if (!Loot::GetSingleton().IsShowing()) {
-				return EventResult::kContinue;
-			}
-
+			const bool isShowing = Loot::GetSingleton().IsShowing();
 			bool shouldStop = false;
+
 			if (a_event) {
 				for (auto event = *a_event; event; event = event->next) {
 					const auto buttonEvent = event->AsButtonEvent();
@@ -178,13 +176,29 @@ namespace Input
 								RE::ControlMap::kInvalid;
 
 						if (buttonEvent->GetIDCode() == idCode) {
-							shouldStop = true;
+							if (buttonEvent->IsDown()) {
+								if (isShowing) {
+									shouldStop = true;
+									_isSuppressingRelease = true;
+								}
+							} else if (buttonEvent->IsUp()) {
+								if (_isSuppressingRelease) {
+									shouldStop = true;
+									_isSuppressingRelease = false;
+								}
+							} else {
+								if (_isSuppressingRelease) {
+									shouldStop = true;
+								}
+							}
 						}
 					}
 				}
 
-				for (auto& callback : _callbacks) {
-					(*callback)(*a_event);
+				if (isShowing) {
+					for (auto& callback : _callbacks) {
+						(*callback)(*a_event);
+					}
 				}
 			}
 
@@ -192,5 +206,6 @@ namespace Input
 		}
 
 		std::vector<std::unique_ptr<IHandler>> _callbacks{};
+		bool _isSuppressingRelease{ false };
 	};
 }
