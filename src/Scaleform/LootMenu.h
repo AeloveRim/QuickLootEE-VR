@@ -228,12 +228,13 @@ namespace Scaleform
 
 		void AdvanceMovie(float a_interval, std::uint32_t a_currentTime) override
 		{
+			ProcessDelegate();
+
 			auto src = _src.get();
 			if (!src || src->IsActivationBlocked()) {
 				Close();
 			}
 
-			ProcessDelegate();
 			super::AdvanceMovie(a_interval, a_currentTime);
 		}
 
