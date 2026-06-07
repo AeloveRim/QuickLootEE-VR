@@ -1,7 +1,5 @@
 #pragma once
 
-#include <chrono>
-
 class HUDManager
 {
 public:
@@ -20,11 +18,7 @@ public:
 	}
 
 	void Enable() noexcept { _enabled = true; }
-	void Disable() noexcept 
-	{ 
-		_enabled = false; 
-		_disabledTime = std::chrono::steady_clock::now();
-	}
+	void Disable() noexcept { _enabled = false; }
 
 protected:
 	template <std::uint64_t ID>
@@ -61,17 +55,11 @@ protected:
 		static inline REL::Relocation<decltype(GetActivateText)> _func;
 	};
 
-	[[nodiscard]] bool Enabled() const noexcept 
-	{ 
-		if (_enabled) {
-			return true;
-		}
-		return (std::chrono::steady_clock::now() - _disabledTime) < std::chrono::milliseconds(200);
-	}
-	[[nodiscard]] bool Disabled() const noexcept { return !Enabled(); }
+	[[nodiscard]] bool Enabled() const noexcept { return _enabled; }
+	[[nodiscard]] bool Disabled() const noexcept { return !_enabled; }
 
 private:
-	HUDManager() noexcept = default;
+	constexpr HUDManager() noexcept = default;
 	HUDManager(const HUDManager&) = delete;
 	HUDManager(HUDManager&&) = delete;
 
@@ -81,5 +69,4 @@ private:
 	HUDManager& operator=(HUDManager&&) = delete;
 
 	std::atomic_bool _enabled{ false };
-	std::chrono::steady_clock::time_point _disabledTime{};
 };
