@@ -80,21 +80,20 @@ namespace Input
 					}
 					_context = true;
 					if (event->IsHeld() && event->HeldDuration() > 1.0F) {
-						auto player = RE::PlayerCharacter::GetSingleton();
-						auto hand = player->isRightHandMainHand ? RE::VR_DEVICE::kRightController : RE::VR_DEVICE::kLeftController;
-						if (player) {
-							// Re-enable the activateHandler before calling ActivatePickRef,
-							// otherwise non-animated containers (barrels, sacks, urns) won't
-							// open the vanilla inventory because the handler is still disabled.
-							if (const auto pcControls = RE::PlayerControls::GetSingleton()) {
-								if (pcControls->activateHandler) {
-									pcControls->activateHandler->SetInputEventHandlingEnabled(true);
-								}
-							}
-							player->ActivatePickRef(hand);
-						}
 						auto& loot = Loot::GetSingleton();
 						loot.Close();
+
+						auto player = RE::PlayerCharacter::GetSingleton();
+						if (player) {
+							auto hand = player->isRightHandMainHand ?
+								RE::VR_DEVICE::kRightController :
+								RE::VR_DEVICE::kLeftController;
+							auto task = SKSE::GetTaskInterface();
+							task->AddTask([player, hand]() {
+								player->ActivatePickRef(hand);
+							});
+						}
+
 						_context = false;
 						return;
 					} else if (event->IsUp()) {
